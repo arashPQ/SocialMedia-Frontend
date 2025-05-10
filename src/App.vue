@@ -8,12 +8,12 @@
 					</a>
                 </div>
 
-                <div class="menu-center flex space-x-12">
-                    <a to="#" class="text-purple-700">
+                <div class="menu-center flex space-x-12" v-if="userStore.user.isAuthenticated">
+                    <RouterLink :to="{'name': 'feed'}" class="text-purple-700">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                         </svg>
-                    </a>
+                    </RouterLink>
 
                     <a to="#">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -35,7 +35,15 @@
                 </div>
 
                 <div class="menu-right">
-                	<img src="https://i.pravatar.cc/40?img=70" class="w-12 rounded-full">
+                    <template v-if="userStore.user.isAuthenticated">
+                        <a href="">
+                	        <img src="https://i.pravatar.cc/40?img=60" class="w-12 rounded-full">
+                        </a>
+                    </template>
+                    <template v-else>
+                        <RouterLink :to="{'name': 'login'}" href="#" class="py-4 px-6 bg-gray-600 text-white rounded-lg">Log in</RouterLink>
+                        <RouterLink :to="{'name': 'signup'}" href="#" class="py-4 px-6 bg-porpule-600 text-white rounded-lg">Sign up</RouterLink>
+                    </template>
                 </div>
             </div>
         </div>
@@ -44,8 +52,35 @@
 	<main class="px-8 py-6 bg-gray-100">
         <RouterView />
     </main>
+    <Toast />
 </template>
 
 
 <script>
+import { RouterLink } from 'vue-router';
+import Toast from '@/components/Toast.vue';
+import { useUserStore } from './stores/user';
+import axios from 'axios';
+    export default {
+        setup(){
+            const userStore = useUserStore()
+            return {
+                userStore
+            }
+        },
+
+        components: {
+            Toast
+        },
+        beforeCreate() {
+            this.userStore.initStore()
+            const token = this.userStore.user.access
+            if (token) {
+                axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+            } else {
+                axios.defaults.headers.common["Authorization"] = "";
+            }
+        }
+    }
+
 </script>

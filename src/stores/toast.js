@@ -1,7 +1,6 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 
-export const useToastStore = defineStore({
-    id: 'toast',
+export const useToastStore = defineStore('toast', {
 
     state: () => ({
         ms: 0,
@@ -9,6 +8,7 @@ export const useToastStore = defineStore({
         classes: '',
         isVisible: false
     }),
+
 
     actions: {
         showToast(ms, message, classes) {
