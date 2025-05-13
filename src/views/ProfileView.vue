@@ -3,19 +3,27 @@
         <div class="main-left col-span-1">
             <div class="p-4 bg-white border border-gray-200 text-center rounded-lg">
                 <img src="https://i.pravatar.cc/300?img=60" class="mb-6 rounded-full">
-                <p><strong>EAP Social Media</strong></p>
+                <p><strong>{{ user.username }}</strong></p>
 
                 <div class="mt-6 flex space-x-8 justify-around">
-                    <RouterLink :to="{'name': 'followers', params:{'username': userStore.user.username}}">
-                        <p class="text-xs text-gray-500">{{ userStore.user.friends_count }} Friends</p>
+                    <RouterLink :to="{'name': 'followers', params:{'username': user.username}}">
+                        <p class="text-xs text-gray-500">{{ user.friends_count }} Friends</p>
                     </RouterLink>
                     <p class="text-xs text-gray-500">10 Posts</p>
                 
                 </div>
+                <div class="mt-6" v-if="userStore.user.id !== user.id">
+                    <button @click="follow" class="inline-block py-4 px-6 bg-purple-600 text-white rounded-lg">
+                        Follow
+                    </button>
+                </div>
             </div>
         </div>
         <div class="main-center col-span-2 space-y-4">
-            <div class="p-4 bg-white border border-gray-200 rounded-lg">
+            <div 
+                class="p-4 bg-white border border-gray-200 rounded-lg"
+                v-if="userStore.user.id === user.id"
+            >
                 <form v-on:submit.prevent="submitForm" action="" method="post">
                     <div class="p-4">
                         <textarea v-model="body" class="p-4 w-full bg-gray-100 rounded-lg" placeholder="What are you thinking about ?!"></textarea>
@@ -36,42 +44,34 @@
                 <FeedPosts v-bind:post="post" />
             </div>
         </div>
-
-        <div class="main-right col-span-1 space-y-4">
-            <PeopleYouMayKnow />
-            <Trends />
-
-
-        </div>
     </div>
 </template>
 
 
 <script>
 import axios from 'axios';
-import Trends from '@/components/Trends.vue';
-import PeopleYouMayKnow from '@/components/PeopleYouMayKnow.vue';
-import FeedPosts from '@/components/FeedPosts.vue';
 import { useUserStore } from '@/stores/user';
-
+import FeedPosts from '@/components/FeedPosts.vue';
 
 export default {
     name: "FeedView",
-    setup(){
+
+    components: {
+        FeedPosts
+    },
+
+    setup() {
         const userStore = useUserStore()
         return {
             userStore
         }
     },
-    components:{
-        Trends,
-        PeopleYouMayKnow,
-        FeedPosts
-    },
+
 
     data() {
         return {
             posts: [],
+            user: {},
             body: '',
         }
     },
@@ -79,6 +79,17 @@ export default {
     mounted() {
         this.getFeed()
     },
+
+    watch: {
+        '$route.params.id': {
+            handler: function() {
+                this.getFeed()
+            },
+            deep: true,
+            immadiate: true
+        }
+    },
+
     computed: {
         isButtonEnabled() {
             const textWithoutSpaces = this.body.replace(/[\s\u200C]/g, '');
@@ -89,9 +100,10 @@ export default {
     methods: {
         getFeed() {
             axios
-            .get('/api/posts/')
+            .get(`/api/posts/profile/${this.$route.params.username}/`)
             .then(response => {
-                this.posts = response.data
+                this.posts = response.data.posts
+                this.user = response.data.user
             })
             .catch(error => {
                 console.log('error', error);
@@ -100,15 +112,11 @@ export default {
         },
 
         submitForm() {
-            if (this.body === '') {
-                this.errors.push('You need post something')
-            }
             axios
             .post('/api/posts/create/', {
                 'body': this.body
             })
             .then(response => {
-                console.log('data: ', response.data);
                 this.posts.unshift(response.data)
                 this.body = ''
             })
@@ -117,7 +125,20 @@ export default {
                 
             })
             
-        }
+        },
+        follow() {
+            axios
+            .post(`/api/followers/request/${this.$route.params.username}/`, {
+                
+            })
+            .then(response => {
+                console.log('data: ', response.data);
+            })
+            .catch(error => {
+                console.log('error: ', error);
+                
+            })
+        },
     }
 }
 
