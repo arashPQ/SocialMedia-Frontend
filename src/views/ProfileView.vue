@@ -12,9 +12,21 @@
                     <p class="text-xs text-gray-500">10 Posts</p>
                 
                 </div>
-                <div class="mt-6" v-if="userStore.user.id !== user.id">
-                    <button @click="follow" class="inline-block py-4 px-6 bg-purple-600 text-white rounded-lg">
+                <div class="mt-6">
+                    <button @click="follow" 
+                        class="inline-block py-4 px-6 bg-purple-600 text-white rounded-lg"
+                        v-if="userStore.user.id !== user.id"
+                        >
+                        
                         Follow
+                    </button>
+
+                    <button @click="logout" 
+                        class="inline-block py-4 px-6 bg-red-600 text-white rounded-lg"
+                        v-if="userStore.user.id === user.id"
+                        >
+                        
+                        logout
                     </button>
                 </div>
             </div>
@@ -52,6 +64,8 @@
 import axios from 'axios';
 import { useUserStore } from '@/stores/user';
 import FeedPosts from '@/components/FeedPosts.vue';
+import { useToastStore } from '@/stores/toast';
+
 
 export default {
     name: "FeedView",
@@ -62,8 +76,11 @@ export default {
 
     setup() {
         const userStore = useUserStore()
+        const toastStore = useToastStore()
+
         return {
-            userStore
+            userStore,
+            toastStore
         }
     },
 
@@ -132,13 +149,22 @@ export default {
                 
             })
             .then(response => {
-                console.log('data: ', response.data);
+                if (response.data.message == 'request already sent') {
+                    this.toastStore.showToast(5000, 'request already sent.', 'bg-red-300')
+                } else {
+                    this.toastStore.showToast(5000, 'request sent.', 'bg-emerald-500')
+                }
             })
             .catch(error => {
                 console.log('error: ', error);
                 
             })
         },
+        logout() {
+            this.userStore.removeToken()
+            this.toastStore.showToast(5000, 'we hope you came back!', 'bg-red-300')
+            this.$router.push('/login')
+        }
     }
 }
 

@@ -109,9 +109,7 @@ export default defineComponent( {
             axios
             .get(`/api/followers/${this.$route.params.username}/`)
             .then(response => {
-                this.followers = response.data.followers
-                console.log(response.data);
-                
+                this.followers = response.data.followers                
                 this.followRequest = response.data.requests
                 this.user = response.data.user
             })
@@ -127,6 +125,8 @@ export default defineComponent( {
             .post(`/api/followers/${pk}/${status}/`)
             .then(response =>{
                 console.log('data: ', response.data);
+
+               
                 
             })
             .catch(error => {
