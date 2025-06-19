@@ -1,7 +1,7 @@
 <template>
     <div class="mb-6 flex items-center justify-between">
         <div class="flex items-center space-x-6">
-            <img src="https://i.pravatar.cc/300?img=70" class="w-[40px] rounded-full">
+            <img src="@/assets/go.png" class="w-[40px] rounded-full">
             
             <p>
                 <strong>
@@ -65,7 +65,7 @@ export default {
             axios.post(`/api/posts/${id}/like/`)
             .then(response => {
                 console.log(response.data)
-                if (response.data.message === 'like created.') {
+                if (response.data.message === 'like created') {
                     this.toastStore.showToast(5000, 'like created.', 'bg-emerald-500')
                     this.post.likes_count += 1
                 } else {

@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto grid grid-cols-4 gap-4">
         <div class="main-left col-span-1">
             <div class="p-4 bg-white border border-gray-200 text-center rounded-lg">
-                <img src="https://i.pravatar.cc/300?img=60" class="mb-6 rounded-full">
+                <img src="@/assets/go.png" class="mb-6 rounded-full">
                 <p><strong>{{ user.username }}</strong></p>
 
                 <div class="mt-6 flex space-x-8 justify-around">
@@ -25,7 +25,7 @@
                     Follow Requests
                 </h2><br>
                 <div class="p-4 text-center bg-gray-100 rounded-lg" v-for="request in followRequest" v-bind:key="request.id">
-                    <img src="https://i.pravatar.cc/100?img=70" class="mb-6 mx-auto rounded-full">
+                    <img src="@/assets/go.png" class="mb-6 mx-auto rounded-full">
                     <p>
                         <strong>
                             <RouterLink :to="{'name': 'profile', params:{'username': request.created_by.username}}">{{ request.created_by.name }}</RouterLink>
@@ -53,7 +53,7 @@
                     Followers
                 </h2><br>
                 <div class="p-4 text-center bg-gray-100 rounded-lg" v-for="follower in followers" v-bind:key="follower.id">
-                    <img src="https://i.pravatar.cc/100?img=70" class="mb-6 mx-auto rounded-full">
+                    <img src="@/assets/go.png" class="mb-6 mx-auto rounded-full">
                     <p>
                         <strong>
                             <RouterLink :to="{'name': 'profile', params:{'username': follower.username}}">{{ follower.name }}</RouterLink>

@@ -5,11 +5,10 @@ import SignupView from '@/views/SignupView.vue'
 import SigninView from '@/views/SigninView.vue'
 import FeedView from '@/views/FeedView.vue'
 import ProfileView from '@/views/ProfileView.vue'
-import MessagesView from '@/views/MessagesView.vue'
 import SearchView from '@/views/SearchView.vue'
 import FriendsView from '@/views/FriendsView.vue'
 import PostDetailView from '@/views/PostDetailView.vue'
-
+import ConversationView from '@/views/ConversationView.vue'
 
 
 const router = createRouter({
@@ -46,12 +45,7 @@ const router = createRouter({
       component: ProfileView,
     },
     {
-      path: '/messages',
-      name: 'messages',
-      component: MessagesView,
-    },
-    {
-      path: '/Search',
+      path: '/search',
       name: 'search',
       component: SearchView,
     },
@@ -64,6 +58,11 @@ const router = createRouter({
       path: '/posts/:id/',
       name: 'postview',
       component: PostDetailView,
+    },
+    {
+      path: '/chat/',
+      name: 'chatview',
+      component: ConversationView,
     },
   ],
 })

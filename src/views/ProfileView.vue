@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto grid grid-cols-4 gap-4">
         <div class="main-left col-span-1">
             <div class="p-4 bg-white border border-gray-200 text-center rounded-lg">
-                <img src="https://i.pravatar.cc/300?img=60" class="mb-6 rounded-full">
+                <img src="@/assets/go.png" class="mb-6 rounded-full">
                 <p><strong>{{ user.username }}</strong></p>
 
                 <div class="mt-6 flex space-x-8 justify-around">
@@ -14,11 +14,19 @@
                 </div>
                 <div class="mt-6">
                     <button @click="follow" 
-                        class="inline-block py-4 px-6 bg-purple-600 text-white rounded-lg"
+                        class="inline-block py-4 px-6 mr-5 bg-purple-600 text-white rounded-lg"
                         v-if="userStore.user.id !== user.id"
                         >
                         
                         Follow
+                    </button>
+
+                    <button @click="direct" 
+                        class="inline-block py-4 px-6 bg-purple-600 text-white rounded-lg"
+                        v-if="userStore.user.id !== user.id"
+                        >
+                        
+                        Direct
                     </button>
 
                     <button @click="logout" 
@@ -115,6 +123,19 @@ export default {
     },
 
     methods: {
+        direct() {
+            axios.get(`/api/chat/${this.$route.params.username}/direct/`)
+            .then(response => {
+                console.log(response.data);
+                this.$router.push('/chat')
+                
+            })
+            .catch(error => {
+                console.log('error', error);
+                
+            })
+        },
+
         getFeed() {
             axios
             .get(`/api/posts/profile/${this.$route.params.username}/`)
