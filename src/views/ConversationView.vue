@@ -9,12 +9,13 @@
                         v-bind:key="conversation.id" 
                         v-on:click="setActiveConversation(conversation.id)">
                             <div class="flex items-center space-x-2">
-                                <img src="@/assets/go.png" class="w-[40px] rounded-full">
+                                
                                 
                                 <template 
                                 v-for="user in conversation.users"
                                 v-bind:key="user.id"
                                 >
+                                    <img v-if="user.id !== userStore.user.id" :src="user.get_avatar" class="w-[40px] rounded-full">
                                     <p class="text-xs" v-if="user.id !== userStore.user.id">{{ user.name }}</p>
 
                                 </template>
@@ -39,7 +40,7 @@
                                     <span class="text-xs text-gray-500 leading-none">{{ message.created_at_formatted }} ago</span>
                                 </div>
                                 <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300">
-                                    <img src="@/assets/go.png" class="w-[40px] rounded-full">
+                                    <img :src="message.created_by.get_avatar" class="w-[40px] rounded-full">
                                 </div>
                             </div>
 
@@ -48,7 +49,7 @@
                                 v-else
                             >
                                 <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300">
-                                    <img src="@/assets/go.png" class="w-[40px] rounded-full">
+                                    <img :src="message.created_by.get_avatar" class="w-[40px] rounded-full">
                                 </div>
                                 <div>
                                     <div class="bg-gray-300 p-3 rounded-r-lg rounded-bl-lg">

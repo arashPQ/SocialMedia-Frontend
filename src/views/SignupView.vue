@@ -122,7 +122,14 @@ export default {
                             this.form.username = ''
                             this.form.password1 = ''
                             this.form.password2 = ''
+                            window.location.reload()
                         } else {
+                            const data = JSON.parse(response.data.message)
+                            for(const key in data){
+                                this.errors.push(data[key][0].message)
+                                
+
+                            }
                             this.toastStore.showToast(5000, 'Something went wrong. Please try again', 'bg-red-300')
                         }
                     })

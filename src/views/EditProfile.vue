@@ -1,0 +1,158 @@
+<template>
+    <div class="max-w-7xl mx-auto grid grid-cols-2 gap-4">
+        <div class="main-left">
+            <div class="p-12 bg-white border border-gray-200 rounded-lg">
+                <h1 class="mb-6 text-2xl">Profile information</h1>
+
+                <p class="mb-6 text-gray-500">
+                    Lorem ipsum dolor sit mate. Lorem ipsum dolor sit mate. Lorem ipsum dolor sit mate.
+                    Lorem ipsum dolor sit mate. Lorem ipsum dolor sit mate. Lorem ipsum dolor sit mate.
+                </p>
+                <RouterLink :to="{'name': 'editpassword', params:{'id': userStore.user.id}}" class="underline text-red-600 text-lg">
+                    Change Password!!
+                </RouterLink>
+            </div>
+        </div>
+
+        <div class="main-right">
+            <div class="p-12 bg-white border border-gray-200 rounded-lg">
+                <form class="space-y-6" v-on:submit.prevent="submitForm">
+                    <div>
+                        <label>Name</label><br>
+                        <input type="text" v-model="form.name" placeholder="Your full name" class="w-full mt-2 py-4 px-6 border border-gray-200 rounded-lg">
+                    </div>
+
+                    <div>
+                        <label>Username</label><br>
+                        <input type="text" v-model="form.username" placeholder="Your Unique username" class="w-full mt-2 py-4 px-6 border border-gray-200 rounded-lg">
+                    </div>
+
+                    <div>
+                        <label>E-mail</label><br>
+                        <input type="email" v-model="form.email" placeholder="Your e-mail address" class="w-full mt-2 py-4 px-6 border border-gray-200 rounded-lg">
+                    </div>
+                    <div id="preview" v-if="url">
+                        <img :src="url" class="rounded-lg w-[100px] mt-4" />
+                    </div>
+
+                    <div>
+                        <label class="inline-block py-4 px-6 bg-gray-600 text-white rounded-lg">
+                            <input type="file" ref="file" @change="onFileChange" />
+                            Change Avatar   
+                        </label> 
+                    </div>
+
+                    <template v-if="errors.length > 0">
+                        <div class="bg-red-300 text-white rounded-lg p-6">
+                            <p v-for="error in errors" v-bind:key="error">{{ error }}</p>
+                        </div>
+                    </template>
+
+                    <div>
+                        <button class="py-4 px-6 bg-purple-600 text-white rounded-lg">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+<style>
+input[type="file"] {
+    display: none;
+}
+
+</style>
+
+
+<script>
+import axios from 'axios';
+import { useToastStore } from '@/stores/toast';
+import { useUserStore } from '@/stores/user';
+import { defineComponent } from 'vue';
+
+
+export default defineComponent({
+    setup() {
+        const toastStore = useToastStore()
+        const userStore = useUserStore()
+
+
+        return {
+            toastStore,
+            userStore
+        }
+    },
+
+    data() {
+        return {
+            form: {
+                email: this.userStore.user.email,
+                name: this.userStore.user.name,
+                username: this.userStore.user.username
+            },
+            errors: [],
+            url: ''
+        }
+    },
+
+    methods: {
+        onFileChange(e) {
+            const file = e.target.files[0];
+            this.url = URL.createObjectURL(file);
+        },
+        submitForm() {
+            this.errors = []
+
+            if (this.form.email === '') {
+                this.errors.push('Your e-mail is missing')
+            }
+
+            if (this.form.name === '') {
+                this.errors.push('Your name is missing')
+            }
+
+            if (this.form.username === '') {
+                this.errors.push('Your username is missing')
+            }
+
+            if (this.errors.length === 0) {
+                let formData = new FormData()
+                formData.append('avatar', this.$refs.file.files[0])
+                formData.append('name', this.form.name)
+                formData.append('username', this.form.username)
+                formData.append('email', this.form.email)
+
+
+                axios.post('/api/profile/edit/', formData, {
+                    headers: {'Content-Type': "multipart/form-data"}
+                })
+                .then(response => {
+                    if (response.data.message === 'profile information updated.') {
+                        this.toastStore.showToast(5000, 'The user information is saved.', 'bg-emerald-500')
+                        
+                        this.userStore.setUserInfo({
+                            id: this.userStore.user.id,
+                            email: this.form.email,
+                            name: this.form.name,
+                            username: this.form.username,
+                            avatar: response.data.user.get_avatar
+                            
+                        })
+                        this.$refs.file.value = null
+                        this.url = null
+                        this.$router.back()
+                    } else {
+                        this.toastStore.showToast(5000, `${response.data.message} Please try again`, 'bg-red-300')
+                    }
+                })
+                .catch(error => {
+                    console.log('error', error)
+                })
+            }
+        }
+    }
+})
+
+</script>

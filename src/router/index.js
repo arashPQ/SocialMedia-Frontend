@@ -4,12 +4,15 @@ import AboutView from '../views/AboutView.vue'
 import SignupView from '@/views/SignupView.vue'
 import SigninView from '@/views/SigninView.vue'
 import FeedView from '@/views/FeedView.vue'
+import NotificationView from '@/views/NotificationView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import EditProfile from '@/views/EditProfile.vue'
+import EditPassword from '@/views/EditPassword.vue'
 import SearchView from '@/views/SearchView.vue'
 import FriendsView from '@/views/FriendsView.vue'
 import PostDetailView from '@/views/PostDetailView.vue'
 import ConversationView from '@/views/ConversationView.vue'
-
+import TrendsView from '@/views/TrendsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,9 +43,24 @@ const router = createRouter({
       component: FeedView,
     },
     {
-      path: '/profile/:username/',
+      path: '/notifications',
+      name: 'notification',
+      component: NotificationView,
+    },
+    {
+      path: '/profile/:id/',
       name: 'profile',
       component: ProfileView,
+    },
+    {
+      path: '/profile/:id/edit/',
+      name: 'editprofile',
+      component: EditProfile,
+    },
+    {
+      path: '/profile/:id/editpw/',
+      name: 'editpassword',
+      component: EditPassword,
     },
     {
       path: '/search',
@@ -50,19 +68,24 @@ const router = createRouter({
       component: SearchView,
     },
     {
-      path: '/followers/:username/',
+      path: '/followers/:id/',
       name: 'followers',
       component: FriendsView,
     },
     {
       path: '/posts/:id/',
-      name: 'postview',
+      name: 'post',
       component: PostDetailView,
     },
     {
       path: '/chat/',
-      name: 'chatview',
+      name: 'chat',
       component: ConversationView,
+    },
+    {
+      path: '/trends/:id/',
+      name: 'trends',
+      component: TrendsView,
     },
   ],
 })

@@ -2,14 +2,14 @@
     <div class="max-w-7xl mx-auto grid grid-cols-4 gap-4">
         <div class="main-left col-span-1">
             <div class="p-4 bg-white border border-gray-200 text-center rounded-lg">
-                <img src="@/assets/go.png" class="mb-6 rounded-full">
+                <img :src="user.get_avatar" class="mb-6 rounded-full">
                 <p><strong>{{ user.username }}</strong></p>
 
                 <div class="mt-6 flex space-x-8 justify-around">
                     <RouterLink :to="{'name': 'followers'}">
                         <p class="text-xs text-gray-500">{{ user.friends_count }} Friends</p>
                     </RouterLink>
-                    <p class="text-xs text-gray-500">10 Posts</p>
+                    <p class="text-xs text-gray-500">{{ user.posts_count }} Posts</p>
                 
                 </div>
                 <div class="mt-6" v-if="userStore.user.id !== user.id">
@@ -25,10 +25,10 @@
                     Follow Requests
                 </h2><br>
                 <div class="p-4 text-center bg-gray-100 rounded-lg" v-for="request in followRequest" v-bind:key="request.id">
-                    <img src="@/assets/go.png" class="mb-6 mx-auto rounded-full">
+                    <img :src="request.created_by.get_avatar" class="mb-6 mx-auto rounded-full">
                     <p>
                         <strong>
-                            <RouterLink :to="{'name': 'profile', params:{'username': request.created_by.username}}">{{ request.created_by.name }}</RouterLink>
+                            <RouterLink :to="{'name': 'profile', params:{'id': request.created_by.id}}">{{ request.created_by.name }}</RouterLink>
                         </strong>
                     </p>
                     <div class="mt-6 flex space-x-8 justify-around">
@@ -53,10 +53,10 @@
                     Followers
                 </h2><br>
                 <div class="p-4 text-center bg-gray-100 rounded-lg" v-for="follower in followers" v-bind:key="follower.id">
-                    <img src="@/assets/go.png" class="mb-6 mx-auto rounded-full">
+                    <img :src="follower.get_avatar" class="mb-6 mx-auto rounded-full">
                     <p>
                         <strong>
-                            <RouterLink :to="{'name': 'profile', params:{'username': follower.username}}">{{ follower.name }}</RouterLink>
+                            <RouterLink :to="{'name': 'profile', params:{'id': follower.id}}">{{ follower.name }}</RouterLink>
                         </strong>
                     </p>
                     <div class="mt-6 flex space-x-8 justify-around">
@@ -107,7 +107,7 @@ export default defineComponent( {
     methods: {
         getFriends() {
             axios
-            .get(`/api/followers/${this.$route.params.username}/`)
+            .get(`/api/followers/${this.$route.params.id}/`)
             .then(response => {
                 this.followers = response.data.followers                
                 this.followRequest = response.data.requests

@@ -53,7 +53,7 @@ export default {
     setup() {
         const userStore = useUserStore();
         return {
-            userStore
+            userStore,
         }
     },
     data() {
@@ -87,7 +87,12 @@ export default {
                     })
                     .catch(error => {
                         console.log('error', error)
+                        this.errors.push('The email or password is incorrect!!')
                     })
+            }
+
+            if (this.errors.length === 0) {
+                
                 await axios
                     .get('api/me/')
                     .then(response => {

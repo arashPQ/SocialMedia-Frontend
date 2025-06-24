@@ -40,6 +40,7 @@ export const useUserStore = defineStore('user', {
 
             this.user.access = data.access
             this.user.refresh = data.refresh
+            this.user.username = data.username
             this.user.isAuthenticated = true
 
             localStorage.setItem('user.access', data.access)
