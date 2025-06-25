@@ -57,6 +57,7 @@ export default defineComponent({
     data() {
         return {
             posts: [],
+            notifs: [],
             body: '',
             url: '',
         }
@@ -77,7 +78,8 @@ export default defineComponent({
             axios
             .get('/api/posts/')
             .then(response => {
-                this.posts = response.data
+                this.posts = response.data.serializer
+                this.notifs = response.data.notif_count
             })
             .catch(error => {
                 console.log('error', error);
