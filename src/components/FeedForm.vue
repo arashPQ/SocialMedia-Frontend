@@ -39,9 +39,6 @@ export default defineComponent ({
         return {
             body: '',
             url: '',
-            user: {
-                id: ''
-            },
             is_private: false,         
         }
     },
