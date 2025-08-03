@@ -21,13 +21,38 @@
 
     <div class="my-6 flex justify-between">
         <div class="flex space-x-6">
-            <div @click="likePost(post.id)" class="flex items-center space-x-2">
+            <div id="app" 
+                data-initial-liked="{{ liked|yesno:'true,false' }}" 
+                data-post-id="{{ post.id }}"
+            >
+              <button @click="toggleLike" :class="{ liked: liked }" class="like-button" :disabled="loading">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    :fill="liked ? 'red' : 'none'"
+                    stroke="red"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                    >
+                    <path
+                      d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 
+                         4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 
+                         16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 
+                         11.54L12 21.35z"
+                    />
+                </svg>
+              </button>
+              <span class="likes-count">{{ post.likes_count }}</span>
+            </div>
+
+            <!-- <div @click="likePost(post.id)" class="flex items-center space-x-2">
                 <svg id="like" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                 </svg>  
                 
                 <span class="text-gray-500 text-xs">{{ post.likes_count }} likes</span>
-            </div> 
+            </div>  -->
             <RouterLink :to="{'name': 'post', params:{'id': post.id}}">
                 <div class="flex items-center space-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -89,8 +114,10 @@ import { defineComponent } from 'vue';
 
 
 export default defineComponent ({
+    el: '#app',
     props: {
-        post: Object
+        post: Object,
+        initialLiked: Boolean,
     },
 
     emits: ['deletePost'],
@@ -107,26 +134,53 @@ export default defineComponent ({
 
     data() {
         return {
-            showtoggleModal: false
-        }
+            showtoggleModal: false,
+            loading: false,
+            postId: Number(document.getElementById('app').dataset.postId),
+            liked: document.getElementById('app').dataset.initialLiked === 'true',
+        };
     },
 
 
     methods: {
-        likePost(id) {
-            axios.post(`/api/posts/${id}/like/`)
-            .then(response => {
-                console.log(response.data)
+        async toggleLike() {
+            if (this.loading) return;
+            this.loading = true;
+
+            try {
+                const response = await axios.post(
+                 `/api/posts/${this.post.id}/like/`)
+
                 if (response.data.message === 'like created') {
                     this.toastStore.showToast(5000, 'like created.', 'bg-emerald-500')
+                    this.liked = true;
                     this.post.likes_count += 1
                 } else {
+                    this.liked = false;
+                    this.post.likes_count -= 1
                     this.toastStore.showToast(5000, 'post already liked.', 'bg-red-300')
                 }
-            })
-            .catch(error => {
-                console.log('error', error)
-            })
+                
+                
+            } catch (error) {
+              console.error('Error toggling like:', error);
+            } finally {
+              this.loading = false;
+            }
+        },
+        getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+                }
+              }
+            }
+            return cookieValue;
         },
         toggleModal() {
             this.showtoggleModal = !this.showtoggleModal
@@ -162,3 +216,20 @@ export default defineComponent ({
     }
 })
 </script>
+<style scoped>
+.like-button {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: gray;
+  transition: color 0.3s;
+}
+.like-button.liked {
+  color: red;
+}
+.like-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+</style>
