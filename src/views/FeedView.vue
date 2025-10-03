@@ -8,7 +8,7 @@
 
             <div class="p-4 bg-white border border-gray-200 rounded-lg" v-for="post in posts" v-bind:key="post.id">
                 <FeedPosts 
-                v-bind:post="post" 
+                v-bind:post="post"
                 v-on:deletePost="deletePost" />
             </div>
         </div>
@@ -74,17 +74,15 @@ export default defineComponent({
     },
 
     methods: {
-        getFeed() {
-            axios
-            .get('/api/posts/')
-            .then(response => {
-                this.posts = response.data.serializer
-                this.notifs = response.data.notif_count
-            })
-            .catch(error => {
-                console.log('error', error);
-                
-            })
+        async getFeed() {
+            try{
+                const response = await axios
+                .get('/api/posts/');
+                this.posts = response.data.serializer;
+                this.notifs = response.data.notif_count;
+            }catch(error){
+                console.error('error', error);
+            }
         },
         onFileChange(e) {
             const file = e.target.files[0];

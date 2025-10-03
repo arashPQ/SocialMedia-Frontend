@@ -47,8 +47,6 @@ export default {
             axios
                 .get('/api/notifications/')
                 .then(response => {
-                    console.log(response.data)
-
                     this.notifications = response.data
                 })
                 .catch(error => {
@@ -57,12 +55,10 @@ export default {
         },
 
         async showNotif(notification) {
-            console.log('readNotification', notification.id)
 
             await axios
                 .post(`/api/notifications/${notification.id}/read/`)
                 .then(response => {
-                    console.log(response.data)
 
                     if (notification.type_of_notification == 'postlike' || notification.type_of_notification == 'postcomment') {
                         this.$router.push({name: 'post', params: {id: notification.post_id}})

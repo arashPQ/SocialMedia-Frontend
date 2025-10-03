@@ -25,10 +25,11 @@
                 data-initial-liked="{{ liked|yesno:'true,false' }}" 
                 data-post-id="{{ post.id }}"
             >
-              <button @click="toggleLike" :class="{ liked: liked }" class="like-button" :disabled="loading">
+              <button @click="toggleLike" :class="{ liked: post.is_liked }" class="like-button" :disabled="loading">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     :fill="liked ? 'red' : 'none'"
+                    fill="like ? 'red' : 'none'"
                     stroke="red"
                     stroke-width="2"
                     viewBox="0 0 24 24"
@@ -46,13 +47,6 @@
               <span class="likes-count">{{ post.likes_count }}</span>
             </div>
 
-            <!-- <div @click="likePost(post.id)" class="flex items-center space-x-2">
-                <svg id="like" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                </svg>  
-                
-                <span class="text-gray-500 text-xs">{{ post.likes_count }} likes</span>
-            </div>  -->
             <RouterLink :to="{'name': 'post', params:{'id': post.id}}">
                 <div class="flex items-center space-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -125,10 +119,10 @@ export default defineComponent ({
     setup() {
         const userStore = useUserStore()
         const toastStore = useToastStore()
-
+        
         return {
             userStore,
-            toastStore
+            toastStore,
         }
     },
 
@@ -148,8 +142,7 @@ export default defineComponent ({
             this.loading = true;
 
             try {
-                const response = await axios.post(
-                 `/api/posts/${this.post.id}/like/`)
+                const response = await axios.post(`/api/posts/${this.post.id}/like/`)
 
                 if (response.data.message === 'like created') {
                     this.toastStore.showToast(5000, 'like created.', 'bg-emerald-500')
@@ -158,7 +151,7 @@ export default defineComponent ({
                 } else {
                     this.liked = false;
                     this.post.likes_count -= 1
-                    this.toastStore.showToast(5000, 'post already liked.', 'bg-red-300')
+                    this.toastStore.showToast(5000, 'your liked removed.', 'bg-red-300')
                 }
                 
                 

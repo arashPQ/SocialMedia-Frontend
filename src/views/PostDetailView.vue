@@ -54,7 +54,7 @@ export default {
     setup(){
         const userStore = useUserStore()
         const toastStore = useToastStore()
-
+        
         return {
             userStore,
             toastStore
